@@ -81,6 +81,32 @@ class Triangle : public Shape {
     bool IntersectP(const Ray &ray, bool testAlphaTexture) const;
     Float Area() const;
     Interaction Sample(const Point2f &u) const;
+    std::shared_ptr<TriangleMesh> GetMesh() const {
+       return mesh;
+    }
+    const int* GetIndices() const {
+       return v;
+    }
+    void SurfacePartials(Vector3f& dpdu, Vector3f& dpdv) const {
+       const Point3f &p0 = mesh->p[v[0]];
+       const Point3f &p1 = mesh->p[v[1]];
+       const Point3f &p2 = mesh->p[v[2]];
+       Point2f uv[3];
+       GetUVs(uv);
+
+       // Compute deltas for triangle partial derivatives
+       Vector2f duv02 = uv[0] - uv[2], duv12 = uv[1] - uv[2];
+       Vector3f dp02 = p0 - p2, dp12 = p1 - p2;
+       Float determinant = duv02[0] * duv12[1] - duv02[1] * duv12[0];
+       if (determinant == 0) {
+          // Handle zero determinant for triangle partial derivative matrix
+          CoordinateSystem(Normalize(Cross(p2 - p0, p1 - p0)), &dpdu, &dpdv);
+       } else {
+          Float invdet = 1 / determinant;
+          dpdu = (duv12[1] * dp02 - duv02[1] * dp12) * invdet;
+          dpdv = (-duv12[0] * dp02 + duv02[0] * dp12) * invdet;
+       }
+    }
 
   private:
     // Triangle Private Methods

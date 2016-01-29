@@ -124,6 +124,10 @@ INCLUDE_DIRECTORIES (
 
 SET(OPENEXR_LIBS IlmImf Imath Half)
 
+SET(EMBREE_INCLUDE_DIR " " CACHE "Embree2 include directory" PATH)
+SET(EMBREE_LIBRARY     " " CACHE "Embree2 library file" FILEPATH)
+INCLUDE_DIRECTORIES(${EMBREE_INCLUDE_DIR})
+
 SET ( PBRT_CORE_SOURCE
   src/core/api.cpp
   src/core/bssrdf.cpp
@@ -238,6 +242,10 @@ IF (WIN32)
     )
 ENDIF()
 
+TARGET_LINK_LIBRARIES ( pbrt
+  ${EMBREE_LIBRARY}
+  )
+
 FIND_PACKAGE ( Threads )
 
 # Main renderer
@@ -260,6 +268,7 @@ TARGET_LINK_LIBRARIES ( pbrt_exe
 ADD_EXECUTABLE ( bsdftest
   src/tools/bsdftest.cpp
   )
+
 
 ADD_EXECUTABLE ( exrdiff
   src/tools/exrdiff.cpp

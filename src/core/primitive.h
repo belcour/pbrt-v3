@@ -59,6 +59,7 @@ class Primitive {
                                             MemoryArena &arena,
                                             TransportMode mode,
                                             bool allowMultipleLobes) const = 0;
+    virtual std::shared_ptr<Shape> GetShape() const { return nullptr; }
 };
 
 // GeometricPrimitive Declarations
@@ -81,6 +82,9 @@ class GeometricPrimitive : public Primitive {
     void ComputeScatteringFunctions(SurfaceInteraction *isect,
                                     MemoryArena &arena, TransportMode mode,
                                     bool allowMultipleLobes) const;
+    virtual std::shared_ptr<Shape> GetShape() const  {
+      return shape;
+    }
 
   private:
     // GeometricPrimitive Private Data
