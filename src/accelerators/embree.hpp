@@ -54,6 +54,7 @@ class EmbreeAcc : public Aggregate {
       }
 
       /* TODO: Compute the correct pError
+       *       Compute the correct shading normal. Go look to triangle.cpp:324
        */
       virtual bool Intersect(const Ray &r, SurfaceInteraction *isect) const {
          RTCRay ray;
@@ -63,7 +64,7 @@ class EmbreeAcc : public Aggregate {
          if(ray.geomID != RTC_INVALID_GEOMETRY_ID) {
             Point2f  uvHit(ray.u, ray.v);
             Point3f  pHit = r.o + ray.tfar * r.d;
-            Vector3f pError(0, 0, 0);
+            Vector3f pError(gamma(7), gamma(7), gamma(7));
             Vector3f dpdu, dpdv;
             shapes[ray.geomID]->SurfacePartials(dpdu, dpdv);
             *isect = SurfaceInteraction(pHit, pError, uvHit, -r.d, dpdu, dpdv,
