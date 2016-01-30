@@ -82,6 +82,9 @@
 #include "materials/subsurface.h"
 #include "materials/translucent.h"
 #include "materials/uber.h"
+#ifdef USE_ALTA
+#include "materials/alta.hpp"
+#endif
 #include "samplers/halton.h"
 #include "samplers/maxmin.h"
 #include "samplers/random.h"
@@ -448,6 +451,10 @@ std::shared_ptr<Material> MakeMaterial(const std::string &name,
         material = CreateKdSubsurfaceMaterial(mp);
     else if (name == "fourier")
         material = CreateFourierMaterial(mp);
+#ifdef USE_ALTA
+    else if (name == "alta")
+        material = CreateAltaMaterial(mp);
+#endif
     else
         Warning("Material \"%s\" unknown.", name.c_str());
 

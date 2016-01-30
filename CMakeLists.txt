@@ -128,6 +128,11 @@ SET(EMBREE_INCLUDE_DIR " " CACHE "Embree2 include directory" PATH)
 SET(EMBREE_LIBRARY     " " CACHE "Embree2 library file" FILEPATH)
 INCLUDE_DIRECTORIES(${EMBREE_INCLUDE_DIR})
 
+
+SET(ALTA_INCLUDE_DIR " " CACHE "ALTA include directory" PATH)
+SET(ALTA_LIBRARY     " " CACHE "ALTA core library file" FILEPATH)
+INCLUDE_DIRECTORIES(${ALTA_INCLUDE_DIR})
+
 SET ( PBRT_CORE_SOURCE
   src/core/api.cpp
   src/core/bssrdf.cpp
@@ -227,12 +232,27 @@ FILE ( GLOB PBRT_SOURCE
 INCLUDE_DIRECTORIES ( src )
 INCLUDE_DIRECTORIES ( src/core )
 
+SET(EIGEN3_INCLUDE_DIR " " CACHE "Eigen3 include directory" FILEPATH)
+IF( EXISTS "${EIGEN3_INCLUDE_DIR}/Eigen/Core" )
+   include_directories( ${EIGEN3_INCLUDE_DIR} )
+ELSE()
+   MESSAGE("COULD NOT FIND EIGEN3 CORE HEADERS: ALTA WILL NOT BE COMPILED")
+ENDIF()
+
 ADD_LIBRARY ( pbrt STATIC
   ${PBRT_YACC_LEX_SOURCE}
   ${PBRT_CORE_SOURCE}
   ${PBRT_CORE_HEADERS}
   ${PBRT_SOURCE}
   )
+
+IF( (EXISTS "${ALTA_INCLUDE_DIR}/core/plugins_manager.h") AND 
+   (EXISTS ${ALTA_LIBRARY}) AND (EXISTS "${EIGEN3_INCLUDE_DIR}/Eigen/Core") )
+   MESSAGE("USING ALTA LIBRARY")
+   target_compile_definitions( pbrt PRIVATE USE_ALTA=1 )
+ELSE()
+   MESSAGE("COULD NOT FIND ALTA LIBRARY (HEADERS OR LIB FILE)")
+ENDIF()
 
 IF (WIN32)
   # Avoid a name clash when building on Visual Studio
