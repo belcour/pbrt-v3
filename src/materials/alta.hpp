@@ -16,7 +16,7 @@ struct AltaBRDF : public BxDF {
              const alta::ptr<alta::function>& f)
        : BxDF(BxDFType(BSDF_REFLECTION | BSDF_GLOSSY)), _d(d), _f(f) { }
 
-    Spectrum eval(const Vector &wo, const Vector &wi) const {
+    Spectrum eval(const Vector3f &wo, const Vector3f &wi) const {
        if (wi.z <= 0 || wo.z <= 0) {
           return Spectrum(0.0f);
        }
@@ -37,9 +37,10 @@ struct AltaBRDF : public BxDF {
           vec y = _f->value(x);
           Spectrum res;
           if(_f->dimY() == 3) {
-             res = Spectrum(std::max(y[0], 0.0), std::max(y[1], 0.0), std::max(y[2], 0.0));
+             Float rgb[3] = {Float(y[0]), Float(y[1]), Float(y[2])};
+             res = RGBSpectrum::FromRGB(rgb);
           } else {
-             res = Spectrum(std::max(y[0], 0.0));
+             res = RGBSpectrum(std::max(y[0], 0.0));
           }
           return res;
 
@@ -51,15 +52,16 @@ struct AltaBRDF : public BxDF {
           vec y = _d->value(x);
           Spectrum res;
           if(_d->dimY() == 3) {
-             res = Spectrum(std::max(y[0], 0.0), std::max(y[1], 0.0), std::max(y[2], 0.0));
+             Float rgb[3] = {Float(y[0]), Float(y[1]), Float(y[2])};
+             res = RGBSpectrum::FromRGB(rgb);
           } else {
-             res = Spectrum(std::max(y[0], 0.0));
+             res = RGBSpectrum(std::max(y[0], 0.0));
           }
           return res;
        }
     }
 
-    Spectrum f(const Vector &wo, const Vector &wi) const {
+    Spectrum f(const Vector3f &wo, const Vector3f &wi) const {
 #ifdef FORCE_BILATERAL_SYMMETRY
        return 0.5*(eval(wo, wi) + eval(wi, wo));
 #else
@@ -86,13 +88,13 @@ class AltaMaterial : public Material {
          }
       }
 
-      BSDF *GetBSDF(const DifferentialGeometry &dgGeom,
-            const DifferentialGeometry &dgShading,
-            MemoryArena &arena) const {
+      virtual void ComputeScatteringFunctions(SurfaceInteraction* si,
+                                              MemoryArena& arena,
+                                              TransportMode mode,
+                                              bool allowMultipleLobes) const {
 
-         BSDF *bsdf = BSDF_ALLOC(arena, BSDF)(dgShading, dgGeom.nn);
-         bsdf->Add(BSDF_ALLOC(arena, AltaBRDF)(_data, _func));
-         return bsdf;
+         si->bsdf = ARENA_ALLOC(arena, BSDF)(*si);
+         si->bsdf->Add(ARENA_ALLOC(arena, AltaBRDF)(_data, _func));
       }
    private:
       // ALTA internal types
