@@ -1,0 +1,33 @@
+#ALTA FUNC HEADER
+#CMD  --L2 0.0216724 --Linf 0.0661874 --fitter nonlinear_fitter_ceres --func [nonlinear_function_diffuse, nonlinear_function_abc --fresnel nonlinear_fresnel_schlick] --input silver-paint.alta --max [0.8, 0.8, 10] --output silver-paint.brdf --ymin [0.0, 0.0, 0.0]
+#DIM 6 3
+#PARAM_IN  CARTESIAN
+#ALTA HEADER END
+
+
+
+
+
+#FUNC nonlinear_function_diffuse
+kd 0.04293587451
+kd 0.03485187066
+kd 0.03008172297
+
+#FUNC nonlinear_function_abc
+#PARAM COS_TH
+a  46.00803552
+b  51.44208574
+c  1.407162104
+a  48.13839302
+b  55.27991522
+c  1.419401479
+a  37.30801345
+b  47.62874947
+c  1.591221349
+
+#FUNC nonlinear_fresnel_schlick
+R 0.006855703584
+R 0.007013570096
+R 0.009261642106
+
+

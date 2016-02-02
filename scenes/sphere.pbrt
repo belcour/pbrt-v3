@@ -1,7 +1,7 @@
 
 Film "image"
      "integer xresolution" [512] "integer yresolution" [512]
-     "string filename" "sphere.exr"
+#     "string filename" "sphere.exr"
 
 Sampler "random" "integer pixelsamples" [1024]
 PixelFilter "gaussian"
@@ -31,9 +31,12 @@ AttributeBegin
 AttributeEnd
 
 
-MakeNamedMaterial "blue-metallic-paint" "string type" "alta"
+MakeNamedMaterial "silver-paint-merl" "string type" "alta"
                   "string filename" "silver-paint.binary"
                   "string plugin" "data_merl" "string plugin-type" "data"
+
+MakeNamedMaterial "silver-paint-fit" "string type" "alta"
+                  "string filename" "silver-paint.brdf"
 
 MakeNamedMaterial "floor" "string type" "matte"
                   "color Kd" [.8 .8 .8 ]
@@ -49,7 +52,8 @@ AttributeBegin
 AttributeEnd
 
 AttributeBegin
-   NamedMaterial "blue-metallic-paint"
+   #NamedMaterial "silver-paint-merl"
+   NamedMaterial "silver-paint-fit"
    Translate 0 1 0
    Rotate 60 1 1 1
    Shape "sphere"
